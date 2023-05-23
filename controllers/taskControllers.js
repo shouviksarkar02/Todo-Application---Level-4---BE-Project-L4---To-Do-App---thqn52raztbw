@@ -149,12 +149,12 @@ const getallTask = async (req, res) => {
 
   let query = {};
 
-  if (decodedToken.role !== "admin") {
-    query.creator_id = decodedToken.userId;
-  }
-
   if (req.query.status) {
     query.status = req.query.status;
+  }
+
+  if (decodedToken.role !== "admin") {
+    query.creator_id = decodedToken.userId;
   }
 
   try {
@@ -171,4 +171,5 @@ const getallTask = async (req, res) => {
     });
   }
 };
+
 module.exports = { createTask, getdetailTask, updateTask, deleteTask, getallTask, };
