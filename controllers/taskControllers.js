@@ -175,33 +175,5 @@ const getallTask = async (req, res) => {
       error: error.message,
     });
   }
-}
-const logout = async (req, res) => {
-  const { token } = req.body;
-
-  if (!token) {
-    return res.status(401).json({
-      status: "fail",
-      message: "Authentication failed: Missing token.",
-    });
-  }
-
-  try {
-    jwt.verify(token, JWT_SECRET);
-    res.clearCookie("token");
-
-    return res.status(200).json({
-      status: "success",
-      message: "Logged out successfully.",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      status: "fail",
-      message: "Something went wrong",
-      error: error.message,
-    });
-  }
 };
-
-
-module.exports = { createTask, getdetailTask, updateTask, deleteTask, getallTask, logout};
+module.exports = { createTask, getdetailTask, updateTask, deleteTask, getallTask, };
