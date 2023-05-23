@@ -112,27 +112,27 @@ const signupUser = async (req, res) => {
     
 // };
 const logout = (req, res) => {
-    const { token } = req.body.token;
+    const token = req.body.token;
   
     if (!token) {
       return res.status(401).json({
-        status: "fail",
         message: "Authentication failed: Missing token.",
+        status: "fail",
       });
     }
   
     try {
-      jwt.verify(token, JWT_SECRET);
-      res.clearCookie("token");
+      // Clear the cookie by setting it to an empty string
+      res.cookie("token", "", { expires: new Date(0) });
   
-      return res.status(200).json({
-        status: "success",
+      res.status(200).json({
         message: "Logged out successfully.",
+        status: "success",
       });
     } catch (error) {
-      return res.status(500).json({
-        status: "fail",
+      res.status(500).json({
         message: "Something went wrong",
+        status: "fail",
         error: error.message,
       });
     }
