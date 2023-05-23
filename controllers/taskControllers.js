@@ -137,7 +137,71 @@ the latest data will be at the top.
 const getallTask = async (req, res) => {
 
     //Write your code here.
+    const { token } = req.body;
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(token, JWT_SECRET);
+  } catch (err) {
+    return res.status(401).json({
+      status: "fail",
+      message: "Invalid token",
+    });
+  }
+
+  const userId = decodedToken.userId;
+  const isAdmin = decodedToken.isAdmin;
+
+  let filter = {};
+
+  if (!isAdmin) {
+    filter = { creator_id: userId };
+  }
+
+  if (req.query.status) {
+    filter.status = req.query.status;
+  }
+
+  try {
+    const tasks = await Task.find(filter).sort({ createdAt: -1 });
+
+    res.status(200).json({
+      status: "success",
+      data: tasks,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "fail",
+      message: "Something went wrong",
+      error: error.message,
+    });
+  }
 }
+const logout = async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(401).json({
+      status: "fail",
+      message: "Authentication failed: Missing token.",
+    });
+  }
+
+  try {
+    jwt.verify(token, JWT_SECRET);
+    res.clearCookie("token");
+
+    return res.status(200).json({
+      status: "success",
+      message: "Logged out successfully.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "fail",
+      message: "Something went wrong",
+      error: error.message,
+    });
+  }
+};
 
 
-module.exports = { createTask, getdetailTask, updateTask, deleteTask, getallTask };
+module.exports = { createTask, getdetailTask, updateTask, deleteTask, getallTask, logout};
