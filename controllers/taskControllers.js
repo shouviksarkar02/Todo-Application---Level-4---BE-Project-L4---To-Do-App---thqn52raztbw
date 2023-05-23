@@ -137,7 +137,7 @@ the latest data will be at the top.
 const getallTask = async (req, res) => {
 
     //Write your code here.
-    const { token } = req.body;
+    const { token } = req.body.token;
   let decodedToken;
   try {
     decodedToken = jwt.verify(token, JWT_SECRET);
