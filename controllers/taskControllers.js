@@ -158,7 +158,7 @@ const getallTask = async (req, res) => {
   }
 
   try {
-    const tasks = await Tasks.find(query).sort({ createdAt: -1 });
+    const tasks = await Tasks.find(query).sort({ createdAt: 1 });
     res.status(200).json({
       status: "success",
       data: tasks,
