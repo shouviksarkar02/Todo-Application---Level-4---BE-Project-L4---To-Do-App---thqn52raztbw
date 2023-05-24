@@ -135,41 +135,34 @@ the latest data will be at the top.
 */
 
 const getallTask = async (req, res) => {
-  const { token } = req.body;
-  let decodedToken;
 
-  try {
-    decodedToken = jwt.verify(token, JWT_SECRET);
-  } catch (err) {
-    return res.status(401).json({
-      status: "fail",
-      message: "Authentication failed: Invalid token.",
-    });
-  }
+    //Write your code here.
+    
+    const { token  } = req.body;
+    let decodedToken;
+    try{
+        decodedToken = jwt.verify(token, JWT_SECRET);
+    }catch(err){
+        res.status(404).json({
+            status: 'fail',
+            message: 'Invalid token'
+        });
+    }
+    const creator_id = decodedToken.userId;
+    
+    const user= await Users.findById({creator_id})
+    
+    if(user.role==='admin'){
+        const alltask= await Tasks.find({}).sort({timestamps: -1})
+        
+        res.status(200).json({status:'success', data: [alltask]})
+    }else{
+        const task= await Tasks.find({creator_id:creator_id}).sort({timestamps: -1})
+        res.status(200).json({status:'success', data: [task]})
+    }
+    
+    
+}
 
-  let query = {};
 
-  if (req.query.status) {
-    query.status = req.query.status;
-  }
-
-  if (decodedToken.role !== "admin") {
-    query.creator_id = decodedToken.userId;
-  }
-
-  try {
-    const tasks = await Tasks.find(query).sort({ createdAt: 1 });
-    res.status(200).json({
-      status: "success",
-      data: tasks,
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: "fail",
-      message: "Something went wrong",
-      error: error.message,
-    });
-  }
-};
-
-module.exports = { createTask, getdetailTask, updateTask, deleteTask, getallTask, };
+module.exports = { createTask, getdetailTask, updateTask, deleteTask, getallTask };
